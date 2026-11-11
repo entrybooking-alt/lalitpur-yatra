@@ -240,6 +240,10 @@ section[hidden]{display:none}
 .ch-sum span{font-size:.84rem;color:var(--muted)}
 .ch-body{display:flex;flex-direction:column;gap:12px;border-top:1px solid var(--line);padding-top:12px}
 .tkbtns{display:flex;gap:8px;flex-wrap:wrap}
+.heads{display:flex;flex-direction:column;gap:2px;margin-top:8px;padding:8px 10px;border-radius:8px;background:var(--surface2)}
+.heads a{display:flex;justify-content:space-between;align-items:center;gap:8px;color:var(--ink);text-decoration:none;font-size:.88rem;min-height:30px}
+.heads a b{font-family:var(--f-mono);font-size:.84rem;color:var(--go-ink);white-space:nowrap}
+.heads a span{min-width:0}
 .lb{position:fixed;inset:0;z-index:70;background:rgba(20,24,34,.82);display:flex;flex-direction:column;padding:env(safe-area-inset-top,0px) 0 env(safe-area-inset-bottom,0px)}
 .lb-bar{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 16px;background:#fff;flex-wrap:wrap}
 .lb-bar b{font-family:var(--f-mono)}
@@ -595,6 +599,11 @@ function renderBoarding(){
   $$('.ch-head',root).forEach(h=>h.onclick=()=>{const o=h.getAttribute('aria-expanded')!=='true';h.setAttribute('aria-expanded',o);h.parentElement.querySelector('.ch-body').hidden=!o;h.parentElement.classList.toggle('open',o);if(o)h.scrollIntoView({block:'nearest',behavior:'smooth'})});
   $$('[data-img]',root).forEach(b=>b.onclick=()=>openImg(b.dataset.img));
 }
+const HEADS={E1:[['Jeetender Manchanda','+919810321910','98103 21910'],['Nitin Sachdeva','+919810874142','98108 74142']],
+  C7:[['Upma Kalra','+919136444770','91364 44770'],['Rajeev Manchanda','+919810292949','98102 92949']],
+  C12:[['Madhu Kalra','+919953023523','99530 23523'],['Rajinder Chawla','+919868069784','98680 69784']]};
+HEADS.E2=HEADS.E1;
+const headsHtml=(coach,leg)=>{const h=leg==='go'&&HEADS[coach];return h?`<div class="heads"><span class="label">Coach head</span>${h.map(x=>`<a href="tel:${x[1]}"><span>${esc(x[0])}</span><b>+91 ${x[2]}</b></a>`).join('')}</div>`:''};
 function coachCard(g,leg){
   const seats=[...g.pax.map(p=>legSeat(p,leg).seat),...g.vac.map(x=>x.seat)].sort((a,b)=>a-b), cls=g.coach[0]==='E'?'Executive Chair (EC)':'Chair Car (CC)';
   const mix={};g.pax.forEach(p=>mix[p.dept]=(mix[p.dept]||0)+1);
@@ -604,6 +613,7 @@ function coachCard(g,leg){
     <button class="ch-head" aria-expanded="false"><div><div class="big">${g.coach}</div><span class="small muted">${cls}</span></div>
       <div class="ch-sum"><b>${g.pax.length} yatri</b><span>Seat ${Math.min(...seats)} se ${Math.max(...seats)}${g.vac.length?` &middot; ${g.vac.length} seat khaali`:''}</span></div><span class="chev" aria-hidden="true">›</span></button>
     <div class="seatchips" aria-label="Seat numbers">${seats.map(s=>`<span>${s}</span>`).join('')}</div>
+    ${headsHtml(g.coach,leg)}
     <div class="mix">${Object.entries(mix).map(([d,n])=>`<span><i class="dot" style="background:${dcol(d)};display:inline-block;margin-right:5px"></i>${esc(d)} ${n}</span>`).join('')}</div>
     <div class="ch-body" hidden>
       <div class="tkbtns">${tks.map(t=>`<button class="btn tkb" data-img="${t.pnr}">Ticket dekhein &middot; ${pnrShort(t)}<small>Seat ${t.pax.map(x=>x.seat).join(', ')}</small></button>`).join('')}</div>
